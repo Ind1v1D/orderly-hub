@@ -14,6 +14,8 @@ import { Route as OrderRouteImport } from './routes/order'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
+import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -40,6 +42,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
+  id: '/portfolio/',
+  path: '/portfolio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioSlugRoute = PortfolioSlugRouteImport.update({
+  id: '/portfolio/$slug',
+  path: '/portfolio/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/register': typeof RegisterRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
+  '/portfolio/': typeof PortfolioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/register': typeof RegisterRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
+  '/portfolio': typeof PortfolioIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +78,37 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
   '/register': typeof RegisterRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
+  '/portfolio/': typeof PortfolioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/faq' | '/login' | '/order' | '/register'
+  fullPaths:
+    | '/'
+    | '/faq'
+    | '/login'
+    | '/order'
+    | '/register'
+    | '/portfolio/$slug'
+    | '/portfolio/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/faq' | '/login' | '/order' | '/register'
-  id: '__root__' | '/' | '/faq' | '/login' | '/order' | '/register'
+  to:
+    | '/'
+    | '/faq'
+    | '/login'
+    | '/order'
+    | '/register'
+    | '/portfolio/$slug'
+    | '/portfolio'
+  id:
+    | '__root__'
+    | '/'
+    | '/faq'
+    | '/login'
+    | '/order'
+    | '/register'
+    | '/portfolio/$slug'
+    | '/portfolio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +117,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
   RegisterRoute: typeof RegisterRoute
+  PortfolioSlugRoute: typeof PortfolioSlugRoute
+  PortfolioIndexRoute: typeof PortfolioIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/': {
+      id: '/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio/'
+      preLoaderRoute: typeof PortfolioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolio/$slug': {
+      id: '/portfolio/$slug'
+      path: '/portfolio/$slug'
+      fullPath: '/portfolio/$slug'
+      preLoaderRoute: typeof PortfolioSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,7 +181,18 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
   RegisterRoute: RegisterRoute,
+  PortfolioSlugRoute: PortfolioSlugRoute,
+  PortfolioIndexRoute: PortfolioIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
