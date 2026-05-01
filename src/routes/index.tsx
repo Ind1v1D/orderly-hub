@@ -49,7 +49,7 @@ const testimonials = [
   { letter: "Е", text: "Ребята идеально реализуют мебель по моим чертежам. Весь цикл — от замеров до монтажа — проходит безупречно. Качество фурнитуры и стыков всегда на высоте.", name: "Елена Маркова", role: "Дизайнер «Interior Pro»" },
 ];
 
-function FadeUp({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function FadeUp({ children, className = "", style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
