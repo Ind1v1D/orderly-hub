@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import faqImg from "@/assets/faq.jpg";
@@ -17,10 +20,22 @@ export const Route = createFileRoute("/faq")({
 
 type Faq = { id: string; question: string; answer: string; sort_order: number };
 
+const submissionSchema = z.object({
+  name: z.string().trim().min(2, "Введите имя").max(100),
+  email: z.string().trim().email("Неверный email").max(255),
+  question: z.string().trim().min(10, "Минимум 10 символов").max(1000, "Максимум 1000 символов"),
+});
+
 function FaqPage() {
+  const { user } = useAuth();
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [question, setQuestion] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     supabase.from("faqs").select("*").order("sort_order", { ascending: true }).then(({ data }) => {
@@ -29,6 +44,35 @@ function FaqPage() {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (user?.email) setEmail((e) => e || user.email!);
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = submissionSchema.safeParse({ name, email, question });
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("faq_submissions").insert({
+      name: parsed.data.name,
+      email: parsed.data.email,
+      question: parsed.data.question,
+      user_id: user?.id ?? null,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Не удалось отправить вопрос. Попробуйте позже.");
+      return;
+    }
+    toast.success("Спасибо! Мы ответим на ваш email.");
+    setName("");
+    setQuestion("");
+    if (!user) setEmail("");
+  };
 
   return (
     <div>
@@ -67,14 +111,67 @@ function FaqPage() {
               );
             })}
 
-            <div className="mt-10 p-8 flex flex-col md:flex-row md:items-center justify-between gap-4" style={{ background: "var(--color-section-bg)" }}>
-              <div>
-                <div className="font-display text-xl font-semibold">Не нашли ответ?</div>
-                <div className="text-sm text-muted-foreground mt-1">Оставьте заявку — мы перезвоним и всё расскажем.</div>
-              </div>
-              <Link to="/order" className="inline-block px-8 py-3.5 text-[12px] font-medium tracking-[1.5px] uppercase text-white transition-all hover:-translate-y-0.5" style={{ background: "var(--color-gold)" }}>
-                Оставить заявку
-              </Link>
+            {/* Ask your question form */}
+            <div className="mt-14 p-8 md:p-10" style={{ background: "var(--color-section-bg)" }}>
+              <div className="tag-line mb-3">Не нашли ответ?</div>
+              <h2 className="font-display text-3xl font-semibold mb-2">Задайте свой вопрос</h2>
+              <p className="text-sm text-muted-foreground mb-8">Мы ответим на ваш email в течение рабочего дня.</p>
+
+              <form onSubmit={handleSubmit} className="grid gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[11px] tracking-[1.5px] uppercase text-muted-foreground block mb-2">Имя</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      maxLength={100}
+                      required
+                      className="w-full px-4 py-3 bg-white border outline-none focus:border-gold transition-colors text-sm"
+                      style={{ borderColor: "var(--color-border)" }}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] tracking-[1.5px] uppercase text-muted-foreground block mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      maxLength={255}
+                      required
+                      className="w-full px-4 py-3 bg-white border outline-none focus:border-gold transition-colors text-sm"
+                      style={{ borderColor: "var(--color-border)" }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[11px] tracking-[1.5px] uppercase text-muted-foreground block mb-2">Вопрос</label>
+                  <textarea
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    maxLength={1000}
+                    rows={5}
+                    required
+                    className="w-full px-4 py-3 bg-white border outline-none focus:border-gold transition-colors text-sm resize-none"
+                    style={{ borderColor: "var(--color-border)" }}
+                    placeholder="Опишите, что вас интересует..."
+                  />
+                  <div className="text-[11px] text-muted-foreground mt-1 text-right">{question.length}/1000</div>
+                </div>
+                <div className="flex flex-wrap items-center gap-4 mt-2">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-block px-8 py-3.5 text-[12px] font-medium tracking-[1.5px] uppercase text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
+                    style={{ background: "var(--color-gold)" }}
+                  >
+                    {submitting ? "Отправляем..." : "Отправить вопрос"}
+                  </button>
+                  <Link to="/order" className="text-[12px] uppercase tracking-[1.5px] text-ink-soft hover:text-gold transition-colors border-b border-current pb-0.5">
+                    Или оставить заявку
+                  </Link>
+                </div>
+              </form>
             </div>
           </div>
         </div>

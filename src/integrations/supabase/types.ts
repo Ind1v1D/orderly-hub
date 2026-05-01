@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      faq_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          question: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          question: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          question?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       faqs: {
         Row: {
           answer: string

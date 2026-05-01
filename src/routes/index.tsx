@@ -3,11 +3,7 @@ import { useEffect, useState } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import hero from "@/assets/hero.jpg";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p5 from "@/assets/portfolio-5.jpg";
+import { portfolioItems } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,13 +24,7 @@ const services = [
   { n: "04", name: "Профессиональная установка", d: "Монтаж в срок, без пыли и лишних хлопот. Гарантия 24 месяца." },
 ];
 
-const portfolio = [
-  { img: p1, cat: "Кухня · Дуб + Эмаль", name: "Резиденция на Аль-Фараби", area: "1/6 / 1/2" },
-  { img: p2, cat: "Кухонный остров · Кварц", name: "Penthouse Nurly Tau", area: "6/10 / 1/2" },
-  { img: p3, cat: "Гардероб · Орех", name: "Апартаменты Riverside", area: "10/13 / 1/3" },
-  { img: p4, cat: "Гостиная · MDF", name: "Студия дизайна", area: "1/4 / 2/3" },
-  { img: p5, cat: "TV-консоль · Шпон", name: "Вилла в Горном Гиганте", area: "4/10 / 2/3" },
-];
+const portfolio = portfolioItems;
 
 const steps = [
   { t: "Консультация", d: "Обсуждаем идеи, бюджет и стилевые предпочтения" },
@@ -151,7 +141,12 @@ function IndexPage() {
         </FadeUp>
         <FadeUp className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {portfolio.map((p, i) => (
-            <div key={i} className={`relative overflow-hidden cursor-pointer group ${i === 2 ? "md:row-span-2" : ""} ${i === 4 ? "md:col-span-2" : ""}`}>
+            <Link
+              key={p.slug}
+              to="/portfolio/$slug"
+              params={{ slug: p.slug }}
+              className={`relative overflow-hidden cursor-pointer group block ${i === 2 ? "md:row-span-2" : ""} ${i === 4 ? "md:col-span-2" : ""}`}
+            >
               <img src={p.img} alt={p.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" style={{ minHeight: 280 }} />
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-7" style={{ background: "linear-gradient(to top, rgba(26,26,26,.85) 0%, transparent 50%)" }}>
                 <div className="text-white">
@@ -159,9 +154,14 @@ function IndexPage() {
                   <div className="font-display text-2xl font-semibold">{p.name}</div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </FadeUp>
+        <div className="mt-10">
+          <Link to="/portfolio" className="text-sm tracking-[1.5px] uppercase font-medium text-gold hover:text-ink transition-colors border-b border-gold pb-1">
+            Все проекты →
+          </Link>
+        </div>
       </section>
 
       {/* PROCESS */}

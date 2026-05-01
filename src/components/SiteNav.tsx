@@ -36,6 +36,7 @@ export function SiteNav() {
       <ul className="hidden md:flex gap-9 list-none">
         {[
           { to: "/", label: "Главная" },
+          { to: "/portfolio", label: "Портфолио" },
           { to: "/order", label: "Заказ" },
           { to: "/faq", label: "FAQ" },
         ].map((l) => (
