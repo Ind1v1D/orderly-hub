@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import { getPortfolioItem, portfolioItems } from "@/lib/portfolio-data";
+import { getPortfolioItem, portfolioItems, type PortfolioItem } from "@/lib/portfolio-data";
 
 export const Route = createFileRoute("/portfolio/$slug")({
   loader: ({ params }) => {
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/portfolio/$slug")({
 });
 
 function PortfolioDetail() {
-  const item = Route.useLoaderData();
+  const item = Route.useLoaderData() as PortfolioItem;
   const others = portfolioItems.filter((p) => p.slug !== item.slug).slice(0, 3);
 
   return (
