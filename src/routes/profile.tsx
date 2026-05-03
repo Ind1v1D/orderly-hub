@@ -28,6 +28,8 @@ function ProfilePage() {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -39,15 +41,51 @@ function ProfilePage() {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("full_name, phone")
+      .select("full_name, phone, avatar_url")
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         setFullName(data?.full_name ?? "");
         setPhone(data?.phone ?? "");
+        setAvatarUrl(data?.avatar_url ?? null);
         setLoading(false);
       });
   }, [user]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Максимум 5 МБ");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Только изображения");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (upErr) {
+      setUploading(false);
+      toast.error("Не удалось загрузить");
+      return;
+    }
+    const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+    const url = pub.publicUrl;
+    const { error: dbErr } = await supabase
+      .from("profiles")
+      .update({ avatar_url: url, updated_at: new Date().toISOString() })
+      .eq("id", user.id);
+    setUploading(false);
+    if (dbErr) {
+      toast.error("Не удалось сохранить");
+      return;
+    }
+    setAvatarUrl(url);
+    toast.success("Фото обновлено");
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
