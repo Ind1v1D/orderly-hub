@@ -55,9 +55,13 @@ export function SiteNav() {
       <div className="flex items-center gap-3">
         {user ? (
           <>
-            <span className="hidden sm:inline text-[12px] text-muted-foreground truncate max-w-[160px]">
-              {user.email}
-            </span>
+            <Link
+              to="/profile"
+              className="hidden sm:inline text-[12px] uppercase tracking-[1.5px] text-ink-soft hover:text-gold transition-colors truncate max-w-[160px]"
+              activeProps={{ style: { color: "var(--color-gold)" } }}
+            >
+              Профиль
+            </Link>
             <button
               onClick={async () => { await signOut(); navigate({ to: "/" }); }}
               className="text-[12px] uppercase tracking-[1.5px] text-ink-soft hover:text-gold transition-colors"
