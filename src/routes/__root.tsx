@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "sonner";
+import { AiAssistant } from "@/components/AiAssistant";
 
 function NotFoundComponent() {
   return (
@@ -57,6 +58,7 @@ function RootComponent() {
   return (
     <AuthProvider>
       <Outlet />
+      <AiAssistant />
       <Toaster position="top-center" richColors />
     </AuthProvider>
   );
