@@ -58,7 +58,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <AuthProvider>
-      <Outlet />
+      <PageTransition>
+        <Outlet />
+      </PageTransition>
       <AiAssistant />
       <Toaster position="top-center" richColors />
     </AuthProvider>
