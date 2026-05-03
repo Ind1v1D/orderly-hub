@@ -3,6 +3,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "sonner";
 import { AiAssistant } from "@/components/AiAssistant";
+import { PageTransition } from "@/components/PageTransition";
 
 function NotFoundComponent() {
   return (
