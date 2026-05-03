@@ -128,10 +128,28 @@ function ProfilePage() {
 
         <div className="grid lg:grid-cols-[1fr_1.4fr] gap-12 mt-12 items-start">
           <div className="p-8" style={{ background: "var(--color-section-bg)" }}>
-            <div className="text-[11px] tracking-[1.5px] uppercase text-muted-foreground mb-2">Email</div>
+            <div className="flex flex-col items-center text-center">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4" style={{ background: "var(--color-warm-white)", border: "2px solid var(--color-gold)" }}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Аватар" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-display text-4xl font-bold text-gold">
+                    {(fullName || user.email || "?").charAt(0).toUpperCase()}
+                  </div>
+                )}
+                {uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center text-xs text-white bg-black/50">
+                    Загрузка...
+                  </div>
+                )}
+              </div>
+              <label className="cursor-pointer text-[11px] tracking-[1.5px] uppercase text-ink-soft hover:text-gold transition-colors border-b border-current pb-0.5">
+                {avatarUrl ? "Сменить фото" : "Загрузить фото"}
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={uploading} />
+              </label>
+            </div>
+            <div className="mt-8 text-[11px] tracking-[1.5px] uppercase text-muted-foreground mb-2">Email</div>
             <div className="font-display text-lg break-all">{user.email}</div>
-            <div className="mt-6 text-[11px] tracking-[1.5px] uppercase text-muted-foreground mb-2">ID</div>
-            <div className="text-xs text-muted-foreground break-all font-mono">{user.id}</div>
             <div className="mt-8 pt-6 border-t" style={{ borderColor: "var(--color-border)" }}>
               <Link to="/order" className="text-[12px] uppercase tracking-[1.5px] text-ink-soft hover:text-gold transition-colors border-b border-current pb-0.5">
                 Мои заказы →
