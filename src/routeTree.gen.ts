@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -20,6 +21,11 @@ import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderRoute = OrderRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/portfolio': typeof PortfolioIndexRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
   '/order': typeof OrderRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/login'
     | '/order'
+    | '/profile'
     | '/register'
     | '/portfolio/$slug'
     | '/portfolio/'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/login'
     | '/order'
+    | '/profile'
     | '/register'
     | '/portfolio/$slug'
     | '/portfolio'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/login'
     | '/order'
+    | '/profile'
     | '/register'
     | '/portfolio/$slug'
     | '/portfolio/'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
   OrderRoute: typeof OrderRoute
+  ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   PortfolioSlugRoute: typeof PortfolioSlugRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
   OrderRoute: OrderRoute,
+  ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   PortfolioSlugRoute: PortfolioSlugRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
