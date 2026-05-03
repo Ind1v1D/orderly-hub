@@ -58,6 +58,7 @@ function RootComponent() {
   return (
     <AuthProvider>
       <Outlet />
+      <AiAssistant />
       <Toaster position="top-center" richColors />
     </AuthProvider>
   );
